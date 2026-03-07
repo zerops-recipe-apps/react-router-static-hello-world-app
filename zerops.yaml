@@ -1,0 +1,63 @@
+zerops:
+  # Production setup: build static assets with Node.js,
+  # serve with Nginx. Node.js is NOT present at runtime.
+  - setup: prod
+    build:
+      # Build with Node.js (npm/npx); Nginx serves the output.
+      # The build container compiles the React Router app into
+      # static HTML/CSS/JS, then is deleted after deploy.
+      base: nodejs@22
+
+      buildCommands:
+        - npm ci
+        # Inject VITE_APP_ENV at build time so the compiled JS
+        # bundle carries the environment name. RUNTIME_APP_ENV
+        # is the service's runtime env var, auto-prefixed by
+        # Zerops and injected into the build shell environment.
+        # Falls back to 'production' when unset.
+        - VITE_APP_ENV=${RUNTIME_APP_ENV:-production} npm run build
+
+      # Strip the 'build/client/' prefix so that the directory
+      # contents become the Nginx document root directly
+      # (build/client/index.html → /index.html, etc.).
+      deployFiles:
+        - build/client/~
+
+      cache:
+        - node_modules
+
+    run:
+      # Nginx serves the compiled static assets automatically —
+      # no start command needed; Zerops manages Nginx.
+      base: static
+      # Built-in SPA fallback: any path that does not match a
+      # file is served index.html, so React Router's client-side
+      # routing (useNavigate, <Link>, etc.) works out of the box.
+
+  # Dev setup: deploy full source to a Node.js container for
+  # SSH-based development. Zerops prepares the workspace;
+  # the developer drives via SSH.
+  - setup: dev
+    build:
+      base: nodejs@22
+      os: ubuntu
+      buildCommands:
+        # npm install (not npm ci) — dev environments may not
+        # have a lock file yet; flexible installs are appropriate.
+        - npm install
+
+      # Deploy the entire working directory (source + deps) so
+      # the developer has a ready workspace on SSH login.
+      deployFiles: ./
+
+      cache:
+        - node_modules
+
+    run:
+      # Node.js runtime — developer can run 'npm run dev' or
+      # any React Router / Vite CLI command via SSH.
+      base: nodejs@22
+      os: ubuntu
+      # zsc noop keeps the container alive without starting a
+      # server. The developer starts their own dev server via SSH.
+      start: zsc noop --silent
