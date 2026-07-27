@@ -6,6 +6,10 @@ import {
   ScrollRestoration,
 } from "react-router";
 
+export function links() {
+  return [{ rel: "icon", href: "/favicon.ico", type: "image/x-icon" }];
+}
+
 export default function App() {
   return (
     <html lang="en">

@@ -1,7 +1,7 @@
-# React Router v7 Hello World Recipe App
+# React Router v8 Hello World Recipe App
 
 <!-- #ZEROPS_EXTRACT_START:intro# -->
-A minimal React Router v7 application running in SPA mode (no SSR), deployed as a static site on Zerops — built with Node.js, served by Nginx, with build-time environment variable injection via Vite.
+A minimal React Router v8 application running in SPA mode (no SSR), deployed as a static site on Zerops — built with Node.js 22, served by Nginx, with build-time environment variable injection via Vite.
 Used within [React Router v7 Hello World recipe](https://app.zerops.io/recipes/react-router-hello-world) for [Zerops](https://zerops.io) platform.
 <!-- #ZEROPS_EXTRACT_END:intro# -->
 
@@ -30,13 +30,15 @@ zerops:
       # static HTML/CSS/JS, then is deleted after deploy.
       base: nodejs@22
 
+      # VITE_* vars are baked into the static output at build time —
+      # there is no runtime process to read env vars in static deployments.
+      envVariables:
+        VITE_APP_ENV: production
+
       buildCommands:
         - npm ci
-        # Inject VITE_APP_ENV at build time so the compiled JS
-        # bundle carries the environment name. RUNTIME_APP_ENV
-        # is the service's runtime env var, auto-prefixed by
-        # Zerops and injected into the build shell environment.
-        # Falls back to 'production' when unset.
+        # RUNTIME_APP_ENV overrides VITE_APP_ENV when set on the service
+        # (Zerops exposes runtime vars to the build shell with RUNTIME_ prefix).
         - VITE_APP_ENV=${RUNTIME_APP_ENV:-production} npm run build
 
       # Strip the 'build/client/' prefix so that the directory
@@ -80,6 +82,9 @@ zerops:
       # any React Router / Vite CLI command via SSH.
       base: nodejs@22
       os: ubuntu
+      ports:
+        - port: 5173
+          httpSupport: true
       # zsc noop keeps the container alive without starting a
       # server. The developer starts their own dev server via SSH.
       start: zsc noop --silent
@@ -87,7 +92,7 @@ zerops:
 
 ### 2. Key configuration — `react-router.config.ts`
 
-React Router v7 supports both SSR and SPA modes. For static deployment on Zerops, set `ssr: false` to enable SPA mode — no server rendering, output goes to `build/client/`.
+React Router v8 supports both SSR and SPA modes. For static deployment on Zerops, set `ssr: false` to enable SPA mode — no server rendering, output goes to `build/client/`.
 
 ```ts
 import type { Config } from "@react-router/dev/config";
@@ -116,6 +121,16 @@ In your app, read it as a compile-time constant:
 
 ```ts
 const env = import.meta.env.VITE_APP_ENV;
+```
+
+### 4. Static assets (favicon)
+
+Place files in `public/` — Vite copies them to the build root (`build/client/`). Add a favicon link in `app/root.tsx`:
+
+```tsx
+export function links() {
+  return [{ rel: "icon", href: "/favicon.ico", type: "image/x-icon" }];
+}
 ```
 
 <!-- #ZEROPS_EXTRACT_END:integration-guide# -->

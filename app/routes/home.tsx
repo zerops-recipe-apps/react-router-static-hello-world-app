@@ -6,8 +6,8 @@ declare const __REACT_ROUTER_VERSION__: string;
 
 export function meta() {
   return [
-    { title: "React Router v7 — Zerops Hello World" },
-    { name: "description", content: "React Router v7 static SPA on Zerops" },
+    { title: "React Router — Zerops Hello World" },
+    { name: "description", content: "React Router static SPA on Zerops" },
   ];
 }
 
@@ -23,7 +23,7 @@ export default function Home() {
         <p style={styles.badge}>React Router v{__REACT_ROUTER_VERSION__}</p>
         <h1 style={styles.heading}>Hello from Zerops!</h1>
         <p style={styles.sub}>
-          Static SPA deployed on Zerops via React Router v7 in SPA mode.
+          Static SPA deployed on Zerops via React Router in SPA mode.
         </p>
       </header>
 
