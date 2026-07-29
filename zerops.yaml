@@ -8,13 +8,15 @@ zerops:
       # static HTML/CSS/JS, then is deleted after deploy.
       base: nodejs@22
 
+      # VITE_* vars are baked into the static output at build time —
+      # there is no runtime process to read env vars in static deployments.
+      envVariables:
+        VITE_APP_ENV: production
+
       buildCommands:
         - npm ci
-        # Inject VITE_APP_ENV at build time so the compiled JS
-        # bundle carries the environment name. RUNTIME_APP_ENV
-        # is the service's runtime env var, auto-prefixed by
-        # Zerops and injected into the build shell environment.
-        # Falls back to 'production' when unset.
+        # RUNTIME_APP_ENV overrides VITE_APP_ENV when set on the service
+        # (Zerops exposes runtime vars to the build shell with RUNTIME_ prefix).
         - VITE_APP_ENV=${RUNTIME_APP_ENV:-production} npm run build
 
       # Strip the 'build/client/' prefix so that the directory
@@ -58,6 +60,9 @@ zerops:
       # any React Router / Vite CLI command via SSH.
       base: nodejs@22
       os: ubuntu
+      ports:
+        - port: 5173
+          httpSupport: true
       # zsc noop keeps the container alive without starting a
       # server. The developer starts their own dev server via SSH.
       start: zsc noop --silent

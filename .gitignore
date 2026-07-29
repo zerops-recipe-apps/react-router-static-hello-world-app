@@ -1,5 +1,41 @@
+# Dependencies
 node_modules/
+
+# Build / cache
 build/
 .react-router/
+*.tsbuildinfo
+.turbo/
+dist/
+
+# Environment (secrets — never commit)
 .env
+.env.*
+!.env.example
 .env.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+
+# Platform CLI metadata
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+.vscode/*
+!.vscode/extensions.json
+
+# TLS / keys
+*.pem
