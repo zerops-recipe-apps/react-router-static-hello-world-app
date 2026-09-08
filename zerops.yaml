@@ -6,7 +6,7 @@ zerops:
       # Build with Node.js (npm/npx); Nginx serves the output.
       # The build container compiles the React Router app into
       # static HTML/CSS/JS, then is deleted after deploy.
-      base: nodejs@22
+      base: nodejs@24
 
       # VITE_* vars are baked into the static output at build time —
       # there is no runtime process to read env vars in static deployments.
@@ -14,7 +14,7 @@ zerops:
         VITE_APP_ENV: production
 
       buildCommands:
-        - npm ci
+        - npm ci --include=dev
         # RUNTIME_APP_ENV overrides VITE_APP_ENV when set on the service
         # (Zerops exposes runtime vars to the build shell with RUNTIME_ prefix).
         - VITE_APP_ENV=${RUNTIME_APP_ENV:-production} npm run build
@@ -41,7 +41,7 @@ zerops:
   # the developer drives via SSH.
   - setup: dev
     build:
-      base: nodejs@22
+      base: nodejs@24
       os: ubuntu
       buildCommands:
         # npm install (not npm ci) — dev environments may not
@@ -58,7 +58,7 @@ zerops:
     run:
       # Node.js runtime — developer can run 'npm run dev' or
       # any React Router / Vite CLI command via SSH.
-      base: nodejs@22
+      base: nodejs@24
       os: ubuntu
       ports:
         - port: 5173
