@@ -1,7 +1,7 @@
 # React Router v8 Hello World Recipe App
 
 <!-- #ZEROPS_EXTRACT_START:intro# -->
-A minimal React Router v8 application running in SPA mode (no SSR), deployed as a static site on Zerops — built with Node.js 22, served by Nginx, with build-time environment variable injection via Vite.
+A minimal React Router v8 application running in SPA mode (no SSR), deployed as a static site on Zerops — built with Node.js 24, served by Nginx, with build-time environment variable injection via Vite.
 Used within [React Router v7 Hello World recipe](https://app.zerops.io/recipes/react-router-hello-world) for [Zerops](https://zerops.io) platform.
 <!-- #ZEROPS_EXTRACT_END:intro# -->
 
@@ -28,7 +28,7 @@ zerops:
       # Build with Node.js (npm/npx); Nginx serves the output.
       # The build container compiles the React Router app into
       # static HTML/CSS/JS, then is deleted after deploy.
-      base: nodejs@22
+      base: nodejs@24
 
       # VITE_* vars are baked into the static output at build time —
       # there is no runtime process to read env vars in static deployments.
@@ -63,7 +63,7 @@ zerops:
   # the developer drives via SSH.
   - setup: dev
     build:
-      base: nodejs@22
+      base: nodejs@24
       os: ubuntu
       buildCommands:
         # npm install (not npm ci) — dev environments may not
@@ -80,7 +80,7 @@ zerops:
     run:
       # Node.js runtime — developer can run 'npm run dev' or
       # any React Router / Vite CLI command via SSH.
-      base: nodejs@22
+      base: nodejs@24
       os: ubuntu
       ports:
         - port: 5173
